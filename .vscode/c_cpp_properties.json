@@ -8,11 +8,11 @@
                 "${workspaceFolder}/GnssReceiver/Dev/**",
                 "${workspaceFolder}/LIB.Utils/**",
                 "${workspaceFolder}/LIB.Module/**",
-                "/usr/local/boost_1_73_0/**",
+                "C:/LIB/boost_1_72_0/**",
                 "/usr/include/mariadb/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "D:/Workspace/linux_toolchain/gcc-linaro/bin/arm-eabi-gcc.exe",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64"
