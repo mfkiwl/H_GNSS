@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/GnssReceiver/**",
+                "${workspaceFolder}/GnssReceiver/Dev/**",
+                "${workspaceFolder}/LIB.Utils/**",
+                "${workspaceFolder}/LIB.Module/**",
+                "/usr/local/boost_1_73_0/**",
+                "/usr/include/mariadb/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}

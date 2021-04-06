@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: cpp build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+				"-std=c++17",
+                "-g",
+				"-Wall",
+				"-I${workspaceFolder}/GnssReceiver",
+				"-I${workspaceFolder}/GnssReceiver/Dev",
+				"-I${workspaceFolder}/LIB.Utils",
+				"-I${workspaceFolder}/LIB.Module",
+				"-I/usr/local/boost_1_73_0",
+				"-I/usr/include/mariadb",
+				"-L/usr/lib/x86_64-linux-gnu",
+				"GnssReceiver/Dev/devDB.cpp",
+				"GnssReceiver/Dev/devDataSet.cpp",
+				"GnssReceiver/Dev/devGNSS.cpp",
+				"GnssReceiver/Dev/devGNSS_ModGnssTelitSC872A.cpp",
+				"GnssReceiver/Dev/devGNSS_ModGnssTelitSC872A_Board.cpp",
+				"GnssReceiver/Dev/devLog.cpp",
+				"GnssReceiver/Dev/devSettings.cpp",
+				"GnssReceiver/Dev/devShell.cpp",
+                "GnssReceiver/main.cpp",
+				"LIB.Utils/utilsLog.cpp",
+				"LIB.Utils/utilsPacketNMEAType.cpp",
+				"LIB.Utils/utilsShell.cpp",
+				"LIB.Module/modGnss.cpp",
+				"LIB.Module/modGnssReceiver.cpp",
+				"LIB.Module/modGnssReceiver_State.cpp",
+				"LIB.Module/modGnssReceiver_StateError.cpp",
+				"LIB.Module/modGnssReceiver_StateHalt.cpp",
+				"LIB.Module/modGnssReceiver_StateOperation.cpp",
+				"LIB.Module/modGnssReceiver_StateStart.cpp",
+				"LIB.Module/modGnssReceiver_StateStop.cpp",
+				"LIB.Module/modGnssReceiver_State_CmdGPI.cpp",
+				"LIB.Module/modGnssReceiver_State_CmdGPO.cpp",
+				"LIB.Module/modGnssReceiver_State_CmdREQ.cpp",				
+                "-o",
+                "${workspaceFolder}/GNSS",
+				"-lmariadb",
+				"-lpthread"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
