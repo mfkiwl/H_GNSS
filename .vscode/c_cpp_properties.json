@@ -4,8 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/GnssReceiver/**",
-                "${workspaceFolder}/GnssReceiver/Dev/**",
+                "${workspaceFolder}/Gnss/**",
+                "${workspaceFolder}/Gnss/Dev/**",
                 "${workspaceFolder}/LIB.Utils/**",
                 "${workspaceFolder}/LIB.Module/**",
                 "/usr/local/boost_1_73_0/**",
