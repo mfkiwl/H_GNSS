@@ -8,8 +8,7 @@
                 "${workspaceFolder}/Gnss/Dev/**",
                 "${workspaceFolder}/LIB.Utils/**",
                 "${workspaceFolder}/LIB.Module/**",
-                "/usr/local/boost_1_73_0/**",
-                "/usr/include/mariadb/**"
+                "/usr/local/boost_1_75_0/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
