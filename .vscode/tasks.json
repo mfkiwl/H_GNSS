@@ -4,7 +4,7 @@
         {
             "type": "shell",
             "label": "C/C++: cpp build active file",
-            "command": "/usr/bin/g++",
+            "command": "/usr/local/gcc_linaro/bin/arm-linux-gnueabihf-g++",
             "args": [
 				"-std=c++17",
                 "-g",
@@ -14,7 +14,7 @@
 				"-I${workspaceFolder}/LIB.Utils",
 				"-I${workspaceFolder}/LIB.Module",
 				"-I/usr/local/boost_1_75_0",
-				"-L/usr/lib/x86_64-linux-gnu",
+				"-L/usr/local/gcc_linaro/lib/gcc/arm-linux-gnueabihf/7.5.0",
 				"Gnss/Dev/devDataSet.cpp",
 				"Gnss/Dev/devGNSS.cpp",
 				"Gnss/Dev/devGNSS_ModGnssReceiver.cpp",

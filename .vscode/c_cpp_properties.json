@@ -11,7 +11,7 @@
                 "/usr/local/boost_1_75_0/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "/usr/local/gcc_linaro/bin/arm-linux-gnueabihf-gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "gcc-x64"
