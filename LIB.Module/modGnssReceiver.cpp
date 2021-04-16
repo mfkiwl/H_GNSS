@@ -5,21 +5,11 @@
 namespace mod
 {
 
-tGnssReceiver::tGnssReceiver(utils::tLog* log, bool start)
+tGnssReceiver::tGnssReceiver(utils::tLog* log)
 	:m_pLog(log)
 {
-	m_Control_Operation = start;
-
-	if (m_Control_Operation)
-	{
-		ChangeState(new tStateStart(this, "the very start"));
-		return;
-	}
-	else
-	{
-		ChangeState(new tStateHalt(this, "the very start"));
-		return;
-	}
+	ChangeState(new tStateHalt(this, "the very start"));
+	return;
 }
 
 void tGnssReceiver::operator()()
@@ -30,6 +20,12 @@ void tGnssReceiver::operator()()
 void tGnssReceiver::Start()
 {
 	m_Control_Operation = true;
+}
+
+void tGnssReceiver::Start(bool exitOnError)
+{
+	m_Control_ExitOnError = exitOnError;
+	Start();
 }
 
 void tGnssReceiver::Restart()
@@ -62,6 +58,13 @@ tGnssStatus tGnssReceiver::GetStatus() const
 	return m_pState->GetStatus();
 }
 
+std::string tGnssReceiver::GetLastErrorMsg() const
+{
+	//std::lock_guard<std::mutex> Lock(m_MtxState);
+
+	return m_LastErrorMsg;
+}
+
 void tGnssReceiver::Board_OnReceived(utils::tVectorUInt8& data)
 {
 	std::lock_guard<std::mutex> Lock(m_MtxReceivedData);
@@ -69,7 +72,7 @@ void tGnssReceiver::Board_OnReceived(utils::tVectorUInt8& data)
 	m_ReceivedData.push(data);
 }
 
-bool tGnssReceiver::IsReceivedData()
+bool tGnssReceiver::IsReceivedData() const
 {
 	std::lock_guard<std::mutex> Lock(m_MtxReceivedData);
 

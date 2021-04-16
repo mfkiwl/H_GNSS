@@ -22,7 +22,7 @@ void tGNSS::operator()()
 		{
 			m_StartAuto = false;
 
-			m_pModFSMachine->Start();
+			m_pModFSMachine->Start(true);
 		}
 
 		(*m_pModFSMachine)();
@@ -71,7 +71,7 @@ bool tGNSS::StartUserTaskScript(const std::string& taskScriptID)
 	return false;
 }
 
-mod::tGnssStatus tGNSS::GetStatus()
+mod::tGnssStatus tGNSS::GetStatus() const
 {
 	if (m_pModFSMachine)
 	{
@@ -79,6 +79,16 @@ mod::tGnssStatus tGNSS::GetStatus()
 	}
 
 	return mod::tGnssStatus::Unknown;
+}
+
+std::string tGNSS::GetLastErrorMsg() const
+{
+	if (m_pModFSMachine)
+	{
+		return m_pModFSMachine->GetLastErrorMsg();
+	}
+
+	return {};
 }
 
 }

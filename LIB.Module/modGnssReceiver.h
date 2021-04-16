@@ -177,8 +177,11 @@ class tGnssReceiver
 
 	class tStateHalt :public tState
 	{
+		const bool m_Error = false;
+
 	public:
 		tStateHalt(tGnssReceiver* obj, const std::string& value);
+		tStateHalt(tGnssReceiver* obj, const std::string& value, bool error);
 
 		bool Start() override { return false; }
 		bool Halt() override { return true; }
@@ -191,7 +194,7 @@ class tGnssReceiver
 
 	class tStateOperation :public tState
 	{
-		std::string m_NMEA_MsgLast;
+		const tGnssSettingsNMEA m_SettingsNMEA;
 
 		std::chrono::time_point<tClock> m_StartTime;
 
@@ -249,13 +252,16 @@ class tGnssReceiver
 	std::atomic_bool m_Control_Operation{ false };
 	std::atomic_bool m_Control_Restart{ false };
 	std::atomic_bool m_Control_Exit{ false };
+	std::atomic_bool m_Control_ExitOnError{ false };
 
 	mutable std::mutex m_MtxReceivedData;
 	std::queue<utils::tVectorUInt8> m_ReceivedData;
 
+	std::string m_LastErrorMsg;
+
 public:
 	tGnssReceiver() = delete;
-	explicit tGnssReceiver(utils::tLog* log, bool start = false);
+	explicit tGnssReceiver(utils::tLog* log);
 	tGnssReceiver(const tGnssReceiver&) = delete;
 	tGnssReceiver(tGnssReceiver&&) = delete;
 	virtual ~tGnssReceiver() {};// = 0;
@@ -263,6 +269,7 @@ public:
 	void operator()();
 
 	void Start();
+	void Start(bool exitOnError);
 	void Restart();
 	void Halt();
 	void Exit();
@@ -270,10 +277,11 @@ public:
 	bool StartUserTaskScript(const std::string& taskScriptID);
 
 	tGnssStatus GetStatus() const;
+	std::string GetLastErrorMsg() const;
 
 protected:
 	virtual tGnssTaskScript GetTaskScript(const std::string& id, bool userTaskScript) = 0;
-	virtual std::string GetNMEA_MsgLast() = 0;
+	virtual tGnssSettingsNMEA GetSettingsNMEA() = 0;
 
 	virtual void OnChanged(const tGnssDataSet& value) = 0;
 	//virtual void OnChanged(const tGnssReceiverProperty& value) = 0;
@@ -292,7 +300,7 @@ protected:
 	void Board_OnReceived(utils::tVectorUInt8& data);
 
 private:
-	bool IsReceivedData();
+	bool IsReceivedData() const;
 	utils::tVectorUInt8 GetReceivedDataChunk();
 	bool IsControlOperation() { return m_Control_Operation && !m_Control_Restart; }
 	//bool IsControlStop() { return !m_Control_Operation && m_Control_Restart; }

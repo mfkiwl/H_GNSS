@@ -19,11 +19,11 @@ namespace dev
 
 tDataSetMainControl g_DataSetMainControl;
 
-void Thread_GNSS_Handler(std::promise<std::string>& promise)
+void Thread_GNSS_Handler(std::promise<bool>& promise)
 {
 	dev::tLog Log(dev::tLog::tID::GNSS, "GNSS");
 
-	//Log.LogSettings.Field.GNSS = 1;
+	Log.LogSettings.Field.GNSS = 1;
 
 	boost::asio::io_context IO;
 
@@ -33,17 +33,24 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 		std::thread Thread_IO([&]() { IO.run(); });
 
-		bool Thread_Dev_Exception = false;
+		bool Thread_Dev_Exists = true;
+		bool Thread_Dev_ExistOnError = false;
 		std::thread Thread_Dev([&]()
 			{
 				try
 				{
 					Dev();
+					Thread_Dev_Exists = false;
+					const std::string ErrMsg = Dev.GetLastErrorMsg();
+					if (!ErrMsg.empty())
+					{
+						std::cerr << ErrMsg << "\n";
+						Thread_Dev_ExistOnError = true;
+					}
 				}
 				catch (...)
 				{
-					Thread_Dev_Exception = true;
-
+					Thread_Dev_Exists = false;
 					promise.set_exception(std::current_exception());
 				}
 			});
@@ -52,6 +59,9 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 		while (true)
 		{
+			if (!Thread_Dev_Exists)
+				break;
+
 			if (g_DataSetMainControl.Thread_GNSS_State != tDataSetMainControl::tStateGNSS::Nothing)
 			{
 				switch (g_DataSetMainControl.Thread_GNSS_State)
@@ -89,8 +99,8 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 		Thread_IO.join();
 
-		if (!Thread_Dev_Exception)
-			promise.set_value("EXIT");
+		if (!Thread_Dev_Exists)
+			promise.set_value(Thread_Dev_ExistOnError);
 	}
 	catch (...)
 	{
@@ -100,6 +110,11 @@ void Thread_GNSS_Handler(std::promise<std::string>& promise)
 
 int main(int argc, char* argv[])
 {
+	const bool ShellEnabled = argc >= 2 && !strcmp(argv[1], "shell");
+
+	dev::tLog::LogSettings.Value = 0;
+	dev::tLog::LogSettings.Field.Enabled = ShellEnabled ? 1 : 0;
+
 	try
 	{
 		dev::g_Settings = dev::tSettings(std::string(argv[0]) + ".cfg");
@@ -111,41 +126,37 @@ int main(int argc, char* argv[])
 		return 1;//ERROR
 	}
 
+	int CErr = 0;
 	////////////////////////////////
-	std::thread Thread_Shell(dev::ThreadFunShell);
+	std::thread Thread_Shell;
+
+	if (ShellEnabled)
+		Thread_Shell = std::thread(dev::ThreadFunShell);
 	////////////////////////////////
 
-	std::promise<std::string> Thread_GNSS_Promise;
+	std::promise<bool> Thread_GNSS_Promise;
 	auto Thread_GNSS_Future = Thread_GNSS_Promise.get_future();
 
 	std::thread Thread_GNSS(Thread_GNSS_Handler, std::ref(Thread_GNSS_Promise));//C++11
 
-	bool Exit = false;
-
 	try
 	{
-		//while (true)
-		//{
-			std::string StrValue = Thread_GNSS_Future.get();
-
-			std::cout << StrValue << '\n';
-		//}
-
-		Exit = true;
+		if (Thread_GNSS_Future.get())
+			CErr = 2;
 	}
 	catch (std::exception & e)
 	{
 		std::cerr << "Exception: " << e.what() << "\n";
 
 		g_DataSetMainControl.Thread_GNSS_State = tDataSetMainControl::tStateGNSS::Exit;
+
+		CErr = 3;
 	}
 
 	Thread_GNSS.join();
 
-	if (!Exit)
-		std::cout << "Press ENTER...";
+	if (ShellEnabled)
+		Thread_Shell.detach();
 
-	Thread_Shell.join();
-
-	return 0;
+	return CErr;
 }
